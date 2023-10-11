@@ -51,6 +51,21 @@ const insertManyData = async (req, res) => {
     }
 }
 
+const updateFormByID=async(req,res)=>{
+    try{
+        const{name, email, age, message}=req.body
+        let dataById= await FORM.findByIdAndUpdate(req.params.id,{name, email, age, message},
+            {new:true})
+            if(!dataById){
+                return res.status(404).json({message:"DATA NOT FOUND"})
+            }
+            res.json(dataById)
+    }catch(error){
+        res.status(500).json({error:error.message})
+    }
+}
+
+
 module.exports={
-    CreateData,getAllForm,insertManyData,deleteFormById
+    CreateData,getAllForm,insertManyData,deleteFormById,updateFormByID
 }

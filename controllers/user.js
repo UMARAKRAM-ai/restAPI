@@ -57,8 +57,6 @@ const getSingleDataWithQuery = async (req, res)=>{
 
 const updateById=async(req , res)=> {
     try{
-
-
     const {name,email,password}=req.body;
     let dataAgainstId = await Todo.findByIdAndUpdate(req.params.id,{name,email,password},
         {new:true})
