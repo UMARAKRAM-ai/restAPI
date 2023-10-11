@@ -12,9 +12,18 @@ const todoSchema=new mongoose.Schema({
     password:{
         type:String,
         required:true
-    }
+    },
+    role: {
+      type: String,
+      enum: ['customer','admin','HR','Manager'],
+      default: 'customer'
+  },
  
 })
 
 const Todo=mongoose.model("User",todoSchema)
 module.exports=Todo
+
+
+
+ 

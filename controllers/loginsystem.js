@@ -7,10 +7,10 @@ const nodemailer = require('nodemailer');
 // Sign-up API or controller function
 const signupUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password,role } = req.body;
     const hashPassword = await bcrypt.hash(password, 10);
-    
-    const newUser = new User({ username, email, password: hashPassword });
+  
+    const newUser = new User({ username, email, password: hashPassword, role });
     await newUser.save();
     
     res.status(201).json({ message: 'User Created Successfully' });
@@ -26,7 +26,7 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && await bcrypt.compare(password, user.password)) {
-      const token = jwt.sign({ userId: user.id, email: user.email }, "A2AEE335D18843203C80AF2AD5E8C5EAF", { expiresIn: "1hr" });
+      const token = jwt.sign({ userId: user.id, email: user.email, role:user.role }, process.env.PRIVATE_KEY, { expiresIn: "1hr" });
       res.status(200).json({ token });
     } else {
       res.status(401).json({ error: 'Invalid Credentials' });
@@ -38,15 +38,17 @@ const loginUser = async (req, res) => {
 
 
 const getAllData = async (req, res) => {
-    try {
-      // Fetch all data from the database (you can modify this query based on your schema)
-      const allData = await User.find();
-  
-      res.status(200).json(allData);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: error.message });
+  try {
+    const userRole = req.user.role;
+    if (userRole === 'HR') {
+      const users = await User.find({});
+      res.status(200).json(users);
+    } else {
+      res.status(403).json({ error: 'Forbidden' });
     }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
   };
 
 
@@ -63,7 +65,7 @@ const forgotPassword = async (req, res) => {
 
     const resetToken = generateResetToken();
     user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = Date.now() + 200000;
+    user.resetPasswordExpires = Date.now() + 2000000;
 
     await user.save();
 
@@ -81,7 +83,7 @@ const forgotPassword = async (req, res) => {
       secure: false, // TLS
       auth: {
         user: 'eng.umarakram@outlook.com',
-        pass: '',
+        pass: '123UmaR@49473',
       }
     });
 

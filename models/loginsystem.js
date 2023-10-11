@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6, // Minimum password length
   },
+  role: {
+    type: String,
+    enum: ['customer','admin','HR','Manager'],
+    default: 'customer'
+},
   resetPasswordToken: String,            // New field for the reset token
   resetPasswordExpires: Date,           // New field for token expiration
 });

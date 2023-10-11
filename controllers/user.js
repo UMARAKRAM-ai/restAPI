@@ -42,6 +42,11 @@ const getSingleDataWithQuery = async (req, res)=>{
     }
   }
 
+  const generateResetToken = () => {
+    const key = crypto.randomBytes(32);
+    const tokenKey = key.toString('hex');
+    return tokenKey;
+  }
 
   const deleteById=async(req , res)=> {
     try{
