@@ -29,7 +29,7 @@ const signupUser = async (req, res) => {
       secure: false, // TLS
       auth: {
         user: 'eng.umarakram@outlook.com',
-        pass: '123UmaR@49473',
+        pass: '',
       }
     });
 
@@ -133,7 +133,7 @@ const forgotPassword = async (req, res) => {
       secure: false, // TLS
       auth: {
         user: 'eng.umarakram@outlook.com',
-        pass: '123UmaR@49473',
+        pass: '',
       }
     });
 
