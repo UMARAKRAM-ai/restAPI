@@ -11,9 +11,38 @@ const signupUser = async (req, res) => {
     const hashPassword = await bcrypt.hash(password, 10);
   
     const newUser = new User({ username, email, password: hashPassword, role });
+    const otp = generateOTP();
+    newUser.otp = otp;
     await newUser.save();
     
-    res.status(201).json({ message: 'User Created Successfully' });
+     // Send the OTP to the user's email
+     const mailOptions = {
+      from: 'eng.umarakram@outlook.com',
+      to: newUser.email,
+      subject: 'Your OTP for Sign-Up',
+      text: `Your OTP is: ${otp}`,
+    };
+
+    const transporter = nodemailer.createTransport({
+      host: 'smtp-mail.outlook.com',
+      port: 587,
+      secure: false, // TLS
+      auth: {
+        user: 'eng.umarakram@outlook.com',
+        pass: '123UmaR@49473',
+      }
+    });
+
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Failed to send OTP email' });
+      } else {
+        console.log('Email sent: ' + info.response);
+        res.status(201).json({ message: 'User Created Successfully' });
+      }
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -22,9 +51,12 @@ const signupUser = async (req, res) => {
 // Login API or controller function
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, otp } = req.body;
     const user = await User.findOne({ email });
 
+    if (user.otp !== otp) {
+      return res.status(401).json({ error: 'Invalid OTP' });
+    }
     if (user && await bcrypt.compare(password, user.password)) {
       const token = jwt.sign({ userId: user.id, email: user.email, role:user.role }, process.env.PRIVATE_KEY, { expiresIn: "1hr" });
       res.status(200).json({ token });
@@ -51,6 +83,24 @@ const getAllData = async (req, res) => {
   }
   };
 
+
+
+  const deleteById=async(req , res)=> {
+    try{
+      const { email, password, otp } = req.body;
+      const user = await User.findOne({ otp });
+      if (user.otp !== otp) {
+        return res.status(401).json({ error: 'Invalid OTP' });
+      }
+    let dataAgainstId = await Todo.findByIdAndDelete(req.params.otp)
+    if(!dataAgainstId){
+        return res.status(404).json({message:"DATA NOT FOUND"})
+    }
+    res.json({message:'Deleted Successfully'})
+    } catch (error) {
+        res.status(500).json({error:error.message})
+    }
+}
 
 
 // Reset Password API or controller function
@@ -109,6 +159,16 @@ const generateResetToken = () => {
   return token;
 }
 
+
+
+const generateOTP = () => {
+  const otp = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit OTP
+  return otp.toString();
+};
+
+
+
+
 const resetPassword = async (req, res) => {
     try {
       const token = req.query.token;
@@ -144,4 +204,4 @@ const resetPassword = async (req, res) => {
     }
   };
 
-module.exports = { signupUser, loginUser,getAllData, forgotPassword, resetPassword };
+module.exports = { signupUser, loginUser,getAllData, forgotPassword, resetPassword, deleteById };

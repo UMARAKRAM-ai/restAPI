@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
+    // unique: true,
     trim: true,
     validate: {
       validator: isEmail,
@@ -29,6 +29,7 @@ const userSchema = new mongoose.Schema({
 },
   resetPasswordToken: String,            // New field for the reset token
   resetPasswordExpires: Date,           // New field for token expiration
+  otp: String, // New field for OTP
 });
 
 module.exports = mongoose.model('LoginTesting', userSchema);

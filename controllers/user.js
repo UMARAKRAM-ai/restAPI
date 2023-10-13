@@ -1,5 +1,7 @@
 
 const Todo= require("../models/user")
+
+
 const createData=async(req , res)=> {
     try {
         const{name, email, password}=req.body
@@ -13,6 +15,7 @@ const createData=async(req , res)=> {
         res.status(500).json({error:error.message})
     }
 }
+
 const getAllData=async(req,res)=> {
     try{
     const getmongo = await Todo.find()
