@@ -1,8 +1,8 @@
-
-
+const dotenv=require('dotenv')
+dotenv.config()
 
 const mongoose=require('mongoose')
-const Url="mongodb+srv:/luster0.naiejop.mongodb.net/"
+const Url=process.env.URI 
 mongoose.connect(Url,{
     useNewUrlParser:true,
     useUnifiedTopology:true
